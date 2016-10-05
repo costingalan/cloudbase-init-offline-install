@@ -99,11 +99,19 @@ $isoNanoServerPath = "${isoMountDrive}:\NanoServer"
 try
 {
     Import-Module "${isoNanoServerPath}\NanoServerImageGenerator\NanoServerImageGenerator.psm1"
-    New-NanoServerImage -MediaPath "${isoMountDrive}:\" -BasePath $NanoServerDir `
-    -MaxSize $MaxSize -AdministratorPassword $AdministratorPassword -TargetPath $vhdPath `
-    -DeploymentType $DeploymentType -OEMDrivers:$addOEMDrivers `
-    -Compute:$Compute -Storage:$Storage -Clustering:$Clustering `
-    -Containers:$Containers -Packages $Packages -Edition $ServerEdition
+    if ($Packages) {
+        New-NanoServerImage -MediaPath "${isoMountDrive}:\" -BasePath $NanoServerDir `
+            -MaxSize $MaxSize -AdministratorPassword $AdministratorPassword -TargetPath $vhdPath `
+            -DeploymentType $DeploymentType -OEMDrivers:$addOEMDrivers `
+            -Compute:$Compute -Storage:$Storage -Clustering:$Clustering `
+            -Containers:$Containers -Package $Packages -Edition $ServerEdition
+     } else {
+        New-NanoServerImage -MediaPath "${isoMountDrive}:\" -BasePath $NanoServerDir `
+            -MaxSize $MaxSize -AdministratorPassword $AdministratorPassword -TargetPath $vhdPath `
+            -DeploymentType $DeploymentType -OEMDrivers:$addOEMDrivers `
+            -Compute:$Compute -Storage:$Storage -Clustering:$Clustering `
+            -Containers:$Containers -Edition $ServerEdition
+     }
 }
 finally
 {
