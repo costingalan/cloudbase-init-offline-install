@@ -99,19 +99,24 @@ $isoNanoServerPath = "${isoMountDrive}:\NanoServer"
 try
 {
     Import-Module "${isoNanoServerPath}\NanoServerImageGenerator\NanoServerImageGenerator.psm1"
+
+    $nanoServerParams = @{
+        "MediaPath" = "${isoMountDrive}:\";
+        "BasePath" = "$NanoServerDir";
+        "MaxSize" = "$MaxSize";
+        "AdministratorPassword" = "$AdministratorPassword";
+        "TargetPath" = "$vhdPath";
+        "Edition" = "$ServerEdition";
+        "DeploymentType" = "$DeploymentType";
+    }
+
     if ($Packages) {
-        New-NanoServerImage -MediaPath "${isoMountDrive}:\" -BasePath $NanoServerDir `
-            -MaxSize $MaxSize -AdministratorPassword $AdministratorPassword -TargetPath $vhdPath `
-            -DeploymentType $DeploymentType -OEMDrivers:$addOEMDrivers `
-            -Compute:$Compute -Storage:$Storage -Clustering:$Clustering `
-            -Containers:$Containers -Package $Packages -Edition $ServerEdition
-     } else {
-        New-NanoServerImage -MediaPath "${isoMountDrive}:\" -BasePath $NanoServerDir `
-            -MaxSize $MaxSize -AdministratorPassword $AdministratorPassword -TargetPath $vhdPath `
-            -DeploymentType $DeploymentType -OEMDrivers:$addOEMDrivers `
-            -Compute:$Compute -Storage:$Storage -Clustering:$Clustering `
-            -Containers:$Containers -Edition $ServerEdition
-     }
+        $nanoServerParams.Add("Package","$Packages")
+    }
+
+    New-NanoServerImage -Compute:$Compute -Storage:$Storage -Clustering:$Clustering -OEMDrivers:$addOEMDrivers`
+        -Containers:$Containers @nanoServerParams
+
 }
 finally
 {
